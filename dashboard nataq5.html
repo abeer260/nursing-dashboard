@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة معلومات الخدمات التمريضية - النطاق الصحي الخامس</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:    #0d7d6c;
+    --teal-lt: #12a08b;
+    --teal-bg: #e6f4f2;
+    --gold:    #c49a2a;
+    --gold-lt: #f0c84a;
+    --dark:    #0f2027;
+    --ink:     #1a2d35;
+    --muted:   #5a7a84;
+    --border:  #d0e4e1;
+    --surface: #f4faf9;
+    --white:   #ffffff;
+    --red:     #c0392b;
+    --green:   #1e8f6e;
+    --amber:   #d4860a;
+  }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--dark) 0%, #1a4a44 60%, var(--teal) 100%);
+    padding: 36px 48px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: 120px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(196,154,42,0.12);
+  }
+  .header-inner { position: relative; z-index: 1; }
+  .header-logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cluster-badge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .cluster-icon {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+  }
+  .cluster-text { color: rgba(255,255,255,0.9); }
+  .cluster-text .label { font-size: 11px; font-weight: 400; opacity: 0.7; letter-spacing: 0.5px; }
+  .cluster-text .name  { font-size: 15px; font-weight: 700; }
+  .visit-date {
+    color: rgba(255,255,255,0.65);
+    font-size: 13px;
+    text-align: left;
+  }
+  .visit-date span { display: block; }
+  .visit-date strong { color: var(--gold-lt); font-weight: 600; }
+
+  .header-title { color: #fff; font-size: 30px; font-weight: 900; line-height: 1.2; margin-bottom: 6px; }
+  .header-sub   { color: rgba(255,255,255,0.7); font-size: 15px; font-weight: 400; }
+  .header-accent-line {
+    display: inline-block;
+    width: 60px; height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin-top: 10px;
+  }
+
+  /* ── LAYOUT ── */
+  .main { max-width: 1300px; margin: 0 auto; padding: 36px 32px 60px; }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    display: flex; align-items: center; gap: 12px;
+    margin: 36px 0 20px;
+  }
+  .section-title .bar { width: 4px; height: 26px; background: var(--teal); border-radius: 2px; }
+  .section-title h2 { font-size: 19px; font-weight: 700; color: var(--ink); }
+  .section-title .sub { font-size: 13px; color: var(--muted); font-weight: 400; margin-right: auto; }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 8px; }
+  .kpi-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .kpi-card:hover { box-shadow: 0 6px 24px rgba(13,125,108,0.12); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 0 16px 0 80px;
+    opacity: .07;
+  }
+  .kpi-card.c-teal::before   { background: var(--teal); }
+  .kpi-card.c-gold::before   { background: var(--gold); }
+  .kpi-card.c-green::before  { background: var(--green); }
+  .kpi-card.c-red::before    { background: var(--red); }
+
+  .kpi-icon { font-size: 28px; margin-bottom: 8px; }
+  .kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .kpi-value { font-size: 34px; font-weight: 900; line-height: 1; }
+  .kpi-card.c-teal  .kpi-value { color: var(--teal); }
+  .kpi-card.c-gold  .kpi-value { color: var(--gold); }
+  .kpi-card.c-green .kpi-value { color: var(--green); }
+  .kpi-card.c-red   .kpi-value { color: var(--red); }
+  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* ── TWO COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 15px; font-weight: 700; color: var(--ink);
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: var(--teal); }
+  thead th { color: #fff; padding: 10px 14px; font-weight: 600; text-align: right; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+  tbody tr:hover { background: var(--teal-bg); }
+  tbody td { padding: 10px 14px; color: var(--ink); }
+  tbody tr:last-child { border-bottom: none; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-wrap { display: flex; align-items: center; gap: 8px; }
+  .prog-bar-bg { flex: 1; height: 8px; background: var(--teal-bg); border-radius: 4px; overflow: hidden; }
+  .prog-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+  .prog-val { font-size: 12px; font-weight: 700; min-width: 40px; text-align: left; }
+
+  /* ── RANK BADGE ── */
+  .rank-1 { color: #b8860b; font-weight: 900; }
+  .rank-2 { color: #888; font-weight: 700; }
+  .rank-3 { color: #cd7f32; font-weight: 700; }
+  .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; font-weight: 800; }
+  .rank-badge.r1 { background: #fff3cd; color: #b8860b; border: 2px solid #b8860b; }
+  .rank-badge.r2 { background: #f0f0f0; color: #666; border: 2px solid #bbb; }
+  .rank-badge.r3 { background: #fbe8d8; color: #cd7f32; border: 2px solid #cd7f32; }
+  .rank-badge.rn { background: var(--teal-bg); color: var(--teal); border: 1.5px solid var(--border); font-size: 11px; }
+
+  /* ── WINNER CARD ── */
+  .winner-card {
+    background: linear-gradient(135deg, #0f2027 0%, #1a4a44 100%);
+    border-radius: 20px;
+    padding: 28px 30px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .winner-card::before {
+    content: '🏆';
+    position: absolute;
+    font-size: 120px;
+    opacity: .06;
+    bottom: -20px; left: 10px;
+  }
+  .winner-card .wc-label { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .winner-card .wc-name  { font-size: 26px; font-weight: 900; color: var(--gold-lt); margin-bottom: 6px; }
+  .winner-card .wc-score { font-size: 14px; color: rgba(255,255,255,0.85); }
+  .winner-card .wc-score strong { color: #fff; font-size: 18px; }
+  .wc-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .wc-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* ── ATTENDANCE ROW ── */
+  .attend-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .attend-name { font-size: 13px; font-weight: 600; min-width: 130px; }
+  .attend-nums { font-size: 12px; color: var(--muted); min-width: 80px; }
+
+  /* ── SCORE PILL ── */
+  .score-pill {
+    display: inline-block;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+  }
+  .sp-high   { background: #d4f7ee; color: var(--green); }
+  .sp-mid    { background: #fff3cd; color: var(--amber); }
+  .sp-low    { background: #fde8e8; color: var(--red); }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 52px;
+    border-top: 2px solid var(--border);
+    padding: 30px 0 10px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .footer-left .fl-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+  .footer-left .fl-name  { font-size: 16px; font-weight: 800; color: var(--ink); }
+  .footer-left .fl-title { font-size: 13px; color: var(--teal); font-weight: 600; }
+  .footer-right { text-align: left; font-size: 12px; color: var(--muted); }
+
+  /* ── CHART CONTAINERS ── */
+  .chart-box { position: relative; }
+  canvas { max-height: 280px; }
+
+  /* ── OBSERVATION BOX ── */
+  .obs-box {
+    background: var(--teal-bg);
+    border-right: 4px solid var(--teal);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .obs-box .obs-center { font-weight: 700; color: var(--teal); }
+
+  @media print {
+    body { background: #fff; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .kpi-card, .card, .winner-card { break-inside: avoid; }
+  }
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .main { padding: 20px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo-row">
+      <div class="cluster-badge">
+        <div class="cluster-icon">🏥</div>
+        <div class="cluster-text">
+          <div class="label">تجمع الرياض الصحي الثاني</div>
+          <div class="name">النطاق الصحي الخامس</div>
+        </div>
+      </div>
+      <div class="visit-date">
+        <span class="label">فترة الزيارات الإشرافية</span>
+        <strong>مايو 2026</strong>
+        <span>8 مراكز صحية</span>
+      </div>
+    </div>
+    <div class="header-title">لوحة معلومات الخدمات التمريضية</div>
+    <div class="header-sub">تقرير شامل لتقييم الأداء التمريضي — الزيارات الإشرافية الميدانية</div>
+    <div class="header-accent-line"></div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- ── KPIs ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>المؤشرات الإجمالية للنطاق</h2>
+    <span class="sub">إجمالي 8 مراكز صحية</span>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card c-teal">
+      <div class="kpi-icon">🏥</div>
+      <div class="kpi-label">عدد المراكز المُقيَّمة</div>
+      <div class="kpi-value">8</div>
+      <div class="kpi-sub">مراكز صحية — النطاق الخامس</div>
+    </div>
+    <div class="kpi-card c-green">
+      <div class="kpi-icon">👩‍⚕️</div>
+      <div class="kpi-label">إجمالي كوادر التمريض</div>
+      <div class="kpi-value">138</div>
+      <div class="kpi-sub">ممرضاً وممرضة في النطاق</div>
+    </div>
+    <div class="kpi-card c-gold">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-label">متوسط نسبة الإنجاز</div>
+      <div class="kpi-value">97.6%</div>
+      <div class="kpi-sub">من إجمالي 116 نقطة</div>
+    </div>
+    <div class="kpi-card c-teal">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-label">أعلى درجة محققة</div>
+      <div class="kpi-value">115</div>
+      <div class="kpi-sub">مركزان: السلام والنسيم الشرقي</div>
+    </div>
+  </div>
+
+  <!-- ── WINNER ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>أفضل مركز صحي أداءً تمريضياً</h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:20px; margin-bottom:4px;">
+    <div class="winner-card">
+      <div class="wc-label">🏆 المركز الأول مشترك — أعلى درجة في النطاق الخامس</div>
+      <div class="wc-name">مركز صحي السلام & مركز صحي النسيم الشرقي</div>
+      <div class="wc-score"><strong>115 / 116</strong> &nbsp;·&nbsp; نسبة إنجاز 99.1%</div>
+      <div class="wc-pills">
+        <span class="wc-pill">✓ إدارة وقيادة 100%</span>
+        <span class="wc-pill">✓ طوارئ وضماد 100%</span>
+        <span class="wc-pill">✓ غرفة أدوية 100%</span>
+        <span class="wc-pill">✓ سحب دم 100%</span>
+        <span class="wc-pill">✓ TBC مكتمل</span>
+      </div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="card-title"><span class="dot"></span>معايير التميّز التمريضي</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.9;">
+        يُمنح لقب أفضل مركز بناءً على:<br>
+        ① أعلى درجة إجمالية من 116<br>
+        ② اكتمال أكبر عدد من الفئات بنسبة 100%<br>
+        ③ أعلى نسبة حضور للكوادر التمريضية<br>
+        ④ انعدام الملاحظات السلبية الجوهرية
+      </div>
+      <div class="obs-box" style="margin-bottom:0;">
+        <span class="obs-center">مركز صحي السلام</span> حقق 100% في 7 من أصل 8 فئات وأعلى نسبة حضور (89.5%)
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCORES TABLE ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>مقارنة الدرجات الإجمالية — جميع المراكز</h2>
+    <span class="sub">الدرجة الكلية: 116 نقطة | 8 فئات تقييمية</span>
+  </div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>الترتيب</th>
+            <th>المركز الصحي</th>
+            <th>تاريخ الزيارة</th>
+            <th>الدرجة المحققة</th>
+            <th>نسبة الإنجاز</th>
+            <th>مستوى الأداء</th>
+            <th>نسبة الحضور</th>
+          </tr>
+        </thead>
+        <tbody id="scores-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── CHARTS ROW 1 ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>التحليل البياني</h2>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>الدرجات الإجمالية لكل مركز</div>
+      <div class="chart-box"><canvas id="chart-total"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>نسبة الحضور وقت الزيارة</div>
+      <div class="chart-box"><canvas id="chart-attend"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── CATEGORY HEATMAP ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>تحليل الأداء حسب الفئة لكل مركز</h2>
+    <span class="sub">8 فئات تقييمية — الدرجة القصوى مذكورة لكل فئة</span>
+  </div>
+
+  <div class="card">
+    <div class="tbl-wrap">
+      <table id="heatmap-table">
+        <thead>
+          <tr>
+            <th>المركز الصحي</th>
+            <th>F1<br><small>إدارة/12</small></th>
+            <th>F2<br><small>فرز/18</small></th>
+            <th>F3<br><small>طوارئ/18</small></th>
+            <th>F4<br><small>تحصين/18</small></th>
+            <th>F5<br><small>ملزمة/8</small></th>
+            <th>F6<br><small>أدوية/14</small></th>
+            <th>F7<br><small>TBC/16</small></th>
+            <th>F8<br><small>سحب دم/12</small></th>
+            <th>الإجمالي</th>
+          </tr>
+        </thead>
+        <tbody id="heatmap-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── RADAR CHART ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>مقارنة أداء الفئات — أعلى ثلاثة مراكز</h2>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>مخطط الرادار — السلام | الشرقي | السعادة</div>
+      <div class="chart-box" style="height:280px;"><canvas id="chart-radar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>نسبة إنجاز كل فئة — متوسط النطاق</div>
+      <div class="chart-box"><canvas id="chart-cat-avg"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── ATTENDANCE ANALYSIS ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>تحليل الحضور والكوادر التمريضية</h2>
+  </div>
+
+  <div class="three-col">
+    <div class="card" style="grid-column: span 2;">
+      <div class="card-title"><span class="dot"></span>توزيع الكوادر ونسب الحضور</div>
+      <div id="attend-rows"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>إحصاءات الحضور</div>
+      <div style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
+        <div>
+          <div style="color:var(--muted); margin-bottom:3px;">أعلى نسبة حضور</div>
+          <div style="font-weight:800; font-size:16px; color:var(--green);">89.5% — مركز السلام</div>
+        </div>
+        <div>
+          <div style="color:var(--muted); margin-bottom:3px;">أقل نسبة حضور</div>
+          <div style="font-weight:800; font-size:16px; color:var(--amber);">64.7% — مركز الجزيرة</div>
+        </div>
+        <div>
+          <div style="color:var(--muted); margin-bottom:3px;">متوسط الحضور للنطاق</div>
+          <div style="font-weight:800; font-size:16px; color:var(--teal);">78.9%</div>
+        </div>
+        <div>
+          <div style="color:var(--muted); margin-bottom:3px;">إجمالي الغياب وقت الزيارة</div>
+          <div style="font-weight:800; font-size:16px; color:var(--red);">31 فرداً</div>
+        </div>
+        <div>
+          <div style="color:var(--muted); margin-bottom:3px;">إجمالي الحضور وقت الزيارة</div>
+          <div style="font-weight:800; font-size:16px; color:var(--green);">107 فرداً</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WEAKEST POINTS ── -->
+  <div class="section-title">
+    <div class="bar"></div>
+    <h2>نقاط القوة والتحسين</h2>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>✅ نقاط القوة المشتركة</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div class="obs-box" style="border-color:var(--green);">جميع المراكز الـ8 حققت <b>100%</b> في فئة الإدارة والقيادة (F1)</div>
+        <div class="obs-box" style="border-color:var(--green);">جميع المراكز حققت <b>100%</b> في فئة الطوارئ والضماد (F3)</div>
+        <div class="obs-box" style="border-color:var(--green);">جميع المراكز حققت <b>100%</b> في فئة الملزمة الطبية (F5)</div>
+        <div class="obs-box" style="border-color:var(--green);">جميع المراكز حققت <b>100%</b> في غرفة الأدوية (F6)</div>
+        <div class="obs-box" style="border-color:var(--green);">جميع المراكز حققت <b>100%</b> في عيادة سحب الدم (F8)</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>⚠️ نقاط تستوجب التحسين</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div class="obs-box" style="border-color:var(--amber); background:#fffbf0;">
+          <b>عيادة الفرز (F2):</b> 6 مراكز سجّلت تعقيم جزئي للطاولات بعد كل مريض
+        </div>
+        <div class="obs-box" style="border-color:var(--amber); background:#fffbf0;">
+          <b>TBC — طبيب لكل أسرة (F7):</b> معظم المراكز لم تكتمل فيها نسب التمريض حسب الجدول
+        </div>
+        <div class="obs-box" style="border-color:var(--red); background:#fff5f5;">
+          <b>عيادة التحصين (F4):</b> النسيم الأوسط: نقص في أجهزة الطفل السليم ومتابعة النمو
+        </div>
+        <div class="obs-box" style="border-color:var(--amber); background:#fffbf0;">
+          <b>الحضور:</b> مركز الجزيرة — 6 غيابات وقت الزيارة (64.7% حضور فقط)
+        </div>
+        <div class="obs-box" style="border-color:var(--amber); background:#fffbf0;">
+          <b>عيادة الطفل السليم:</b> بعض المراكز بحاجة لتفعيل العيادة كوحدة مستقلة
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div class="footer-left">
+      <div class="fl-label">إعداد التقرير</div>
+      <div class="fl-name">عبير عسيري</div>
+      <div class="fl-title">رئيسة قسم التمريض للنطاق الخامس</div>
+    </div>
+    <div class="footer-right">
+      <div>تجمع الرياض الصحي الثاني</div>
+      <div style="margin-top:3px;">مايو 2026</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════ DATA ══════════
+const centers = [
+  {
+    name:    'مركز صحي السلام',
+    date:    '18 مايو 2026',
+    total:   115, maxScore: 116,
+    pct:     0.9914,
+    totalNurses: 19, present: 17, absent: 2, attendPct: 0.8947,
+    cats:    [12, 17, 18, 18, 8, 14, 16, 12],
+  },
+  {
+    name:    'مركز صحي النسيم الشرقي',
+    date:    '13 مايو 2026',
+    total:   115, maxScore: 116,
+    pct:     0.9914,
+    totalNurses: 18, present: 15, absent: 3, attendPct: 0.8333,
+    cats:    [12, 17, 18, 18, 8, 14, 16, 12],
+  },
+  {
+    name:    'مركز صحي السعادة',
+    date:    '17 مايو 2026',
+    total:   114, maxScore: 116,
+    pct:     0.9828,
+    totalNurses: 20, present: 15, absent: 5, attendPct: 0.75,
+    cats:    [12, 17, 18, 18, 8, 14, 15, 12],
+  },
+  {
+    name:    'مركز صحي المنار',
+    date:    '19 مايو 2026',
+    total:   114, maxScore: 116,
+    pct:     0.9828,
+    totalNurses: 13, present: 10, absent: 3, attendPct: 0.7692,
+    cats:    [12, 17, 18, 18, 8, 14, 15, 12],
+  },
+  {
+    name:    'مركز صحي النسيم الغربي',
+    date:    '18 مايو 2026',
+    total:   114, maxScore: 116,
+    pct:     0.9828,
+    totalNurses: 18, present: 15, absent: 3, attendPct: 0.8333,
+    cats:    [12, 17, 18, 18, 8, 14, 15, 12],
+  },
+  {
+    name:    'مركز صحي الجزيرة',
+    date:    '1 مايو 2026',
+    total:   112, maxScore: 116,
+    pct:     0.9655,
+    totalNurses: 17, present: 11, absent: 6, attendPct: 0.6471,
+    cats:    [12, 17, 18, 18, 8, 14, 13, 12],
+  },
+  {
+    name:    'مركز صحي النسيم الأوسط',
+    date:    '10 مايو 2026',
+    total:   112, maxScore: 116,
+    pct:     0.9655,
+    totalNurses: 15, present: 11, absent: 4, attendPct: 0.7333,
+    cats:    [12, 17, 18, 16, 8, 14, 15, 12],
+  },
+  {
+    name:    'مركز صحي النسيم الجنوبي',
+    date:    '17 مايو 2026',
+    total:   112, maxScore: 116,
+    pct:     0.9655,
+    totalNurses: 18, present: 13, absent: 5, attendPct: 0.7222,
+    cats:    [12, 15, 18, 18, 8, 14, 15, 12],
+  },
+];
+
+const catNames   = ['إدارة/12','فرز/18','طوارئ/18','تحصين/18','ملزمة/8','أدوية/14','TBC/16','سحب دم/12'];
+const catMax     = [12,18,18,18,8,14,16,12];
+const shortNames = centers.map(c => c.name.replace('مركز صحي ',''));
+
+// ── Color helpers ──
+function pctColor(p) {
+  if (p >= 0.98) return '#1e8f6e';
+  if (p >= 0.95) return '#d4860a';
+  return '#c0392b';
+}
+function pctClass(p) {
+  if (p >= 0.98) return 'sp-high';
+  if (p >= 0.95) return 'sp-mid';
+  return 'sp-low';
+}
+function barColor(p) {
+  if (p >= 1)    return '#1e8f6e';
+  if (p >= 0.9)  return '#d4860a';
+  return '#c0392b';
+}
+
+// ── Scores Table ──
+const tbody = document.getElementById('scores-body');
+centers.forEach((c, i) => {
+  const rank = i + 1;
+  let badge = `<span class="rank-badge rn">${rank}</span>`;
+  if (rank === 1) badge = `<span class="rank-badge r1">🥇</span>`;
+  if (rank === 2) badge = `<span class="rank-badge r2">🥈</span>`;
+  if (rank === 3) badge = `<span class="rank-badge r3">🥉</span>`;
+  if (rank <= 2) badge = `<span class="rank-badge r1">🥇</span>`; // shared 1st
+
+  const rankBadge = (i <= 1) ? `<span class="rank-badge r1">🥇</span>`
+                  : (i <= 3) ? `<span class="rank-badge r2">🥈</span>`
+                  : (i <= 4) ? `<span class="rank-badge r3">🥉</span>`
+                  : `<span class="rank-badge rn">${rank}</span>`;
+
+  const pctDisp = (c.pct * 100).toFixed(1) + '%';
+  const attendDisp = (c.attendPct * 100).toFixed(1) + '%';
+  const progFill = `<div class="prog-wrap">
+    <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${c.pct*100}%;background:${pctColor(c.pct)};"></div></div>
+    <span class="prog-val" style="color:${pctColor(c.pct)};">${pctDisp}</span>
+  </div>`;
+  const lvl = c.pct >= 0.99 ? '<span class="score-pill sp-high">ممتاز</span>'
+            : c.pct >= 0.97 ? '<span class="score-pill sp-high">جيد جداً</span>'
+            : '<span class="score-pill sp-mid">جيد</span>';
+
+  tbody.innerHTML += `<tr>
+    <td>${rankBadge}</td>
+    <td style="font-weight:700;">${c.name}</td>
+    <td style="color:var(--muted);font-size:12px;">${c.date}</td>
+    <td style="font-weight:800;font-size:15px;color:${pctColor(c.pct)};">${c.total} / 116</td>
+    <td>${progFill}</td>
+    <td>${lvl}</td>
+    <td style="font-weight:700;color:${c.attendPct>=0.85?'#1e8f6e':c.attendPct>=0.75?'#d4860a':'#c0392b'};">${attendDisp}</td>
+  </tr>`;
+});
+
+// ── Heatmap Table ──
+const hbody = document.getElementById('heatmap-body');
+centers.forEach(c => {
+  let cells = '';
+  c.cats.forEach((v, j) => {
+    const p = v / catMax[j];
+    const bg = p >= 1 ? '#d4f7ee' : p >= 0.9 ? '#fff3cd' : '#fde8e8';
+    const col = p >= 1 ? '#1a7a5e' : p >= 0.9 ? '#a06500' : '#a02020';
+    cells += `<td style="text-align:center;font-weight:700;background:${bg};color:${col};">${v}</td>`;
+  });
+  hbody.innerHTML += `<tr>
+    <td style="font-weight:600;white-space:nowrap;">${c.name.replace('مركز صحي ','')}</td>
+    ${cells}
+    <td style="font-weight:800;text-align:center;">${c.total}</td>
+  </tr>`;
+});
+
+// ── Chart: Total Scores ──
+new Chart(document.getElementById('chart-total'), {
+  type: 'bar',
+  data: {
+    labels: shortNames,
+    datasets: [{
+      label: 'الدرجة المحققة',
+      data: centers.map(c => c.total),
+      backgroundColor: centers.map(c => pctColor(c.pct) + '33'),
+      borderColor:     centers.map(c => pctColor(c.pct)),
+      borderWidth: 2,
+      borderRadius: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} / 116` } }
+    },
+    scales: {
+      y: { min: 108, max: 116, grid: { color: '#e0efed' } },
+      x: { ticks: { font: { family: 'Cairo', size: 11 } } }
+    }
+  }
+});
+
+// ── Chart: Attendance ──
+new Chart(document.getElementById('chart-attend'), {
+  type: 'bar',
+  data: {
+    labels: shortNames,
+    datasets: [
+      {
+        label: 'متواجدون',
+        data: centers.map(c => c.present),
+        backgroundColor: '#0d7d6c55',
+        borderColor: '#0d7d6c',
+        borderWidth: 2, borderRadius: 6,
+      },
+      {
+        label: 'غير متواجدين',
+        data: centers.map(c => c.absent),
+        backgroundColor: '#c0392b44',
+        borderColor: '#c0392b',
+        borderWidth: 2, borderRadius: 6,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { font: { family: 'Cairo' } } } },
+    scales: {
+      x: { stacked: false, ticks: { font: { family: 'Cairo', size: 11 } } },
+      y: { stacked: false, grid: { color: '#e0efed' } }
+    }
+  }
+});
+
+// ── Chart: Radar ──
+const top3 = centers.slice(0, 3);
+const radarLabels = ['إدارة','فرز','طوارئ','تحصين','ملزمة','أدوية','TBC','سحب دم'];
+const radarColors = ['rgba(13,125,108,0.7)','rgba(196,154,42,0.7)','rgba(192,57,43,0.7)'];
+new Chart(document.getElementById('chart-radar'), {
+  type: 'radar',
+  data: {
+    labels: radarLabels,
+    datasets: top3.map((c, i) => ({
+      label: c.name.replace('مركز صحي ',''),
+      data: c.cats.map((v, j) => Math.round(v / catMax[j] * 100)),
+      backgroundColor: radarColors[i].replace('0.7','0.12'),
+      borderColor: radarColors[i],
+      borderWidth: 2,
+      pointBackgroundColor: radarColors[i],
+    }))
+  },
+  options: {
+    responsive: true,
+    scales: {
+      r: { min: 70, max: 100, ticks: { stepSize: 10, font: { family: 'Cairo' } },
+           pointLabels: { font: { family: 'Cairo', size: 11 } } }
+    },
+    plugins: { legend: { labels: { font: { family: 'Cairo' } } } }
+  }
+});
+
+// ── Chart: Category avg ──
+const catAvg = catMax.map((mx, j) => {
+  const sum = centers.reduce((a, c) => a + c.cats[j], 0);
+  return Math.round(sum / centers.length / mx * 1000) / 10;
+});
+new Chart(document.getElementById('chart-cat-avg'), {
+  type: 'bar',
+  data: {
+    labels: ['إدارة','فرز','طوارئ','تحصين','ملزمة','أدوية','TBC','سحب دم'],
+    datasets: [{
+      label: 'متوسط % الإنجاز',
+      data: catAvg,
+      backgroundColor: catAvg.map(v => v >= 99 ? '#d4f7ee' : v >= 93 ? '#fff3cd' : '#fde8e8'),
+      borderColor:     catAvg.map(v => v >= 99 ? '#1e8f6e' : v >= 93 ? '#d4860a' : '#c0392b'),
+      borderWidth: 2, borderRadius: 6,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } }
+    },
+    scales: {
+      x: { min: 80, max: 100, grid: { color: '#e0efed' } },
+      y: { ticks: { font: { family: 'Cairo', size: 12 } } }
+    }
+  }
+});
+
+// ── Attendance Rows ──
+const aDiv = document.getElementById('attend-rows');
+centers.forEach(c => {
+  const p = c.attendPct;
+  const col = p >= 0.85 ? '#1e8f6e' : p >= 0.75 ? '#d4860a' : '#c0392b';
+  aDiv.innerHTML += `<div class="attend-row">
+    <div class="attend-name">${c.name.replace('مركز صحي ','')}</div>
+    <div class="attend-nums">${c.present} / ${c.totalNurses}</div>
+    <div style="flex:1;">
+      <div class="prog-bar-bg" style="height:10px;">
+        <div class="prog-bar-fill" style="width:${p*100}%;background:${col};height:10px;"></div>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:700;min-width:44px;text-align:left;color:${col};">${(p*100).toFixed(1)}%</div>
+  </div>`;
+});
+</script>
+</body>
+</html>
