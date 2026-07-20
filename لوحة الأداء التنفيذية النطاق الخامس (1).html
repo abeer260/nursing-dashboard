@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الأداء التنفيذية | تقييم الخدمات التمريضية - النطاق الخامس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241B33;
+    --ink-2:#33254A;
+    --paper:#F6F4F7;
+    --card:#FFFFFF;
+    --line:#E2DCE6;
+    --teal:#6E4B93;
+    --teal-deep:#4E3169;
+    --teal-tint:#EFE7F4;
+    --gold:#B0703B;
+    --gold-tint:#FAEEE1;
+    --rose:#9C3B4C;
+    --rose-tint:#F7E5E8;
+    --text:#22302E;
+    --text-soft:#5B6B68;
+    --text-faint:#8A9793;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--text);
+    font-family:'Cairo', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Tajawal','Cairo',sans-serif; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
+
+  /* ============ HEADER ============ */
+  header.top{
+    background:linear-gradient(155deg, var(--ink) 0%, var(--ink-2) 62%, #4A2F5E 100%);
+    color:#EFEAE0;
+    padding:52px 0 74px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 68px);
+    pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:13px; letter-spacing:.5px; color:#D9C7E8;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.14);
+    padding:7px 16px; border-radius:999px;
+    font-weight:600;
+  }
+  .eyebrow span.dot{ width:7px; height:7px; border-radius:50%; background:#C98A3A; box-shadow:0 0 0 4px rgba(201,138,58,.22); }
+  header.top h1{
+    font-size:38px; font-weight:800; margin:22px 0 8px; color:#FFFFFF; letter-spacing:.2px;
+  }
+  header.top p.sub{ font-size:16px; color:#C6B9D3; margin:0; max-width:640px; }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:28px;
+    margin-top:34px; padding-top:26px;
+    border-top:1px solid rgba(255,255,255,0.14);
+  }
+  .meta-item .k{ font-size:12px; color:#A796B5; margin-bottom:4px; }
+  .meta-item .v{ font-size:15px; color:#F1EBF4; font-weight:600; }
+
+  /* ============ HERO GAUGE ============ */
+  .hero{
+    margin-top:-46px;
+    position:relative; z-index:2;
+  }
+  .hero-card{
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:0 24px 60px -20px rgba(15,42,44,0.35), 0 2px 0 rgba(15,42,44,0.04);
+    padding:36px 40px;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:40px;
+    align-items:center;
+  }
+  .gauge-box{ display:flex; flex-direction:column; align-items:center; }
+  .gauge-num{ font-family:'Tajawal'; font-size:15px; color:var(--text-soft); margin-top:6px; text-align:center; }
+  .gauge-num b{ display:block; font-size:13px; color:var(--teal-deep); font-weight:700; margin-top:2px;}
+
+  .hero-stats{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:0;
+  }
+  .stat{
+    padding:0 22px;
+    border-right:1px solid var(--line);
+  }
+  .stat:first-child{ padding-right:0; }
+  .stat:last-child{ border-left:none; }
+  .stat .label{ font-size:12.5px; color:var(--text-faint); margin-bottom:8px; font-weight:600; }
+  .stat .value{ font-family:'Tajawal'; font-size:26px; font-weight:800; color:var(--ink-2); }
+  .stat .value.small{ font-size:16px; font-weight:700; line-height:1.4;}
+  .stat .tag{
+    display:inline-block; margin-top:8px; font-size:11.5px; padding:3px 10px; border-radius:999px; font-weight:700;
+  }
+  .tag.good{ background:var(--teal-tint); color:var(--teal-deep); }
+  .tag.watch{ background:var(--rose-tint); color:var(--rose); }
+
+  /* ============ SECTIONS ============ */
+  section{ padding:64px 0; }
+  section.tight{ padding-top:36px; }
+  .section-head{ margin-bottom:32px; }
+  .section-head .kicker{ font-size:12.5px; font-weight:700; color:var(--teal-deep); letter-spacing:.4px; margin-bottom:8px; }
+  .section-head h2{ font-size:26px; font-weight:800; color:var(--ink); margin:0 0 10px; }
+  .section-head p{ color:var(--text-soft); font-size:15px; max-width:680px; margin:0; }
+
+  /* category bars */
+  .cat-list{ display:flex; flex-direction:column; gap:14px; }
+  .cat-row{
+    display:grid; grid-template-columns:230px 1fr 70px;
+    align-items:center; gap:18px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:14px 18px;
+  }
+  .cat-row .name{ font-weight:700; font-size:14.5px; color:var(--ink-2); }
+  .cat-row .track{ background:#EFEBDF; border-radius:8px; height:12px; overflow:hidden; }
+  .cat-row .fill{ height:100%; border-radius:8px; background:linear-gradient(90deg, var(--teal-deep), var(--teal)); }
+  .cat-row.low .fill{ background:linear-gradient(90deg, #6E2836, var(--rose)); }
+  .cat-row .pct{ font-family:'Tajawal'; font-weight:800; font-size:16px; text-align:left; color:var(--ink-2); }
+  .cat-row.low .pct{ color:var(--rose); }
+
+  /* ranking table */
+  .rank-table{
+    width:100%; border-collapse:collapse;
+    background:var(--card); border-radius:14px; overflow:hidden;
+    box-shadow:0 1px 0 var(--line);
+    border:1px solid var(--line);
+  }
+  .rank-table th{
+    text-align:right; font-size:12.5px; color:var(--text-faint); font-weight:700;
+    padding:14px 18px; background:#FBFAF5; border-bottom:1px solid var(--line);
+  }
+  .rank-table td{ padding:15px 18px; border-bottom:1px solid var(--line); font-size:14.5px; vertical-align:middle;}
+  .rank-table tr:last-child td{ border-bottom:none; }
+  .rank-table td.center-name{ font-weight:700; color:var(--ink-2); }
+  .rank-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%;
+    font-family:'Tajawal'; font-weight:800; font-size:12.5px;
+    background:#EFEBDF; color:var(--text-soft);
+  }
+  .rank-badge.top{ background:var(--gold-tint); color:var(--gold); }
+  .bar-cell{ display:flex; align-items:center; gap:12px; }
+  .bar-track{ flex:1; height:10px; background:#EFEBDF; border-radius:6px; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg, var(--teal-deep), var(--teal)); }
+  .bar-fill.watch{ background:linear-gradient(90deg, #6E2836, var(--rose)); }
+  .bar-pct{ font-family:'Tajawal'; font-weight:800; font-size:14.5px; color:var(--ink-2); min-width:52px; text-align:left;}
+  .pill{ font-size:11.5px; padding:4px 10px; border-radius:999px; font-weight:700; }
+  .pill.excellent{ background:var(--teal-tint); color:var(--teal-deep); }
+  .pill.good{ background:var(--gold-tint); color:var(--gold); }
+  .pill.watch{ background:var(--rose-tint); color:var(--rose); }
+
+  /* heatmap */
+  .heatmap-wrap{ overflow-x:auto; border-radius:14px; border:1px solid var(--line); }
+  table.heatmap{ border-collapse:collapse; width:100%; background:var(--card); font-size:13px; min-width:920px; }
+  table.heatmap th, table.heatmap td{ padding:11px 10px; text-align:center; border-bottom:1px solid var(--line); border-left:1px solid var(--line); }
+  table.heatmap th{ background:#FBFAF5; font-weight:700; color:var(--ink-2); font-size:12px; }
+  table.heatmap td.rowlabel, table.heatmap th.rowlabel{ text-align:right; font-weight:700; color:var(--ink-2); background:#FBFAF5; position:sticky; right:0; min-width:170px; }
+  table.heatmap td.cell{ font-weight:700; font-family:'Tajawal'; color:#fff; }
+
+  /* insights grid */
+  .insight-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .insight-card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:26px 26px;
+  }
+  .insight-card h3{ font-size:16px; margin:0 0 14px; color:var(--ink-2); display:flex; align-items:center; gap:10px; }
+  .insight-card h3 .ic{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .insight-card.pos h3 .ic{ background:var(--teal-tint); color:var(--teal-deep); }
+  .insight-card.neg h3 .ic{ background:var(--rose-tint); color:var(--rose); }
+  .insight-card ul{ margin:0; padding-right:20px; color:var(--text-soft); font-size:14px; }
+  .insight-card li{ margin-bottom:10px; }
+  .insight-card li b{ color:var(--ink-2); }
+
+  /* priority actions */
+  .action-list{ display:flex; flex-direction:column; gap:14px; }
+  .action{
+    display:grid; grid-template-columns:44px 1fr auto; gap:18px; align-items:center;
+    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px;
+  }
+  .action .rank{
+    width:36px; height:36px; border-radius:10px; background:var(--ink-2); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-family:'Tajawal'; font-weight:800; font-size:14px;
+  }
+  .action .title{ font-weight:700; color:var(--ink-2); font-size:14.5px; margin-bottom:3px; }
+  .action .desc{ color:var(--text-soft); font-size:13px; }
+  .action .impact{ font-size:12px; font-weight:700; color:var(--gold); background:var(--gold-tint); padding:5px 12px; border-radius:999px; white-space:nowrap; }
+
+  /* data quality */
+  .note-list{ display:flex; flex-direction:column; gap:12px; }
+  .note{
+    display:flex; gap:14px; background:#FBF8F0; border:1px solid #E9DEC2; border-radius:12px; padding:16px 18px;
+  }
+  .note .mark{ font-family:'Tajawal'; font-weight:800; color:var(--gold); font-size:14px; }
+  .note p{ margin:0; font-size:13.5px; color:var(--text-soft); }
+  .note p b{ color:var(--ink-2); }
+
+  footer{
+    background:var(--ink); color:#A796B5; padding:34px 0; font-size:13px; text-align:center;
+  }
+  footer b{ color:#EAE1EF; }
+
+  @media (max-width: 860px){
+    .hero-card{ grid-template-columns:1fr; }
+    .hero-stats{ grid-template-columns:repeat(2,1fr); gap:18px; }
+    .stat{ border-right:none; padding:0; }
+    .insight-grid{ grid-template-columns:1fr; }
+    .cat-row{ grid-template-columns:1fr; gap:8px; }
+    header.top h1{ font-size:28px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> تجمع الرياض الصحي الثاني — النطاق الخامس (Zone 5)</span>
+    <h1>لوحة الأداء التنفيذية لتقييم الخدمات التمريضية</h1>
+    <p class="sub">تحليل شامل لنتائج الزيارات الإشرافية على المراكز الصحية الثمانية التابعة للنطاق، عبر ثمانية معايير رئيسية للجودة والالتزام التشغيلي.</p>
+    <div class="meta-row">
+      <div class="meta-item"><div class="k">عدد المراكز المشمولة</div><div class="v">8 مراكز صحية</div></div>
+      <div class="meta-item"><div class="k">فترة الزيارات</div><div class="v">3 يونيو – 28 يونيو 2026</div></div>
+      <div class="meta-item"><div class="k">عدد المعايير</div><div class="v">8 فئات تقييم / 58 بندًا لكل مركز</div></div>
+      <div class="meta-item"><div class="k">مشرف الزيارات</div><div class="v">أ. عبير عسيري</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="hero-card">
+    <div class="gauge-box">
+      <svg width="200" height="130" viewBox="0 0 200 120">
+        <path d="M14,110 A96,96 0 0 1 186,110" fill="none" stroke="#EFEBDF" stroke-width="16" stroke-linecap="round"/>
+        <path id="gaugeArc" d="M14,110 A96,96 0 0 1 186,110" fill="none" stroke="url(#g1)" stroke-width="16" stroke-linecap="round"
+              stroke-dasharray="270.5" stroke-dashoffset="6.9"/>
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#4E3169"/>
+            <stop offset="100%" stop-color="#8A63AC"/>
+          </linearGradient>
+        </defs>
+        <text x="100" y="92" text-anchor="middle" font-family="Tajawal" font-weight="800" font-size="34" fill="#33254A">97.7%</text>
+      </svg>
+      <div class="gauge-num">نسبة الإنجاز الإجمالية للنطاق<b>عبر جميع المراكز والمعايير</b></div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="label">أفضل أداء</div>
+        <div class="value small">4 مراكز متعادلة عند 99.14%</div>
+        <span class="tag good">المنار · النسيم الشرقي · السلام · النسيم الغربي</span>
+      </div>
+      <div class="stat">
+        <div class="label">بحاجة إلى متابعة</div>
+        <div class="value small">الجزيرة · النسيم الأوسط</div>
+        <span class="tag watch">94.83% لكل منهما</span>
+      </div>
+      <div class="stat">
+        <div class="label">أعلى المعايير تحقيقًا</div>
+        <div class="value small">5 معايير بنسبة 100%</div>
+        <span class="tag good">الإدارة، الطوارئ، الملزمة، الأدوية، سحب الدم</span>
+      </div>
+      <div class="stat">
+        <div class="label">أقل معيار تحقيقًا</div>
+        <div class="value">92.4%</div>
+        <span class="tag watch">عيادة الفرز (Triage)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CATEGORY PERFORMANCE ================= -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">أداء المعايير</div>
+      <h2>نسبة الإنجاز حسب المعيار — إجمالي النطاق</h2>
+      <p>متوسط نسبة الإنجاز لكل معيار من المعايير الثمانية، محسوبة عبر جميع المراكز الصحية الثمانية، ومرتبة من الأعلى إلى الأقل.</p>
+    </div>
+    <div class="cat-list">
+      <div class="cat-row"><div class="name">الإدارة والقيادة</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div></div>
+      <div class="cat-row"><div class="name">عيادة الطوارئ والضماد</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div></div>
+      <div class="cat-row"><div class="name">الملزمة الطبية</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div></div>
+      <div class="cat-row"><div class="name">غرفة الأدوية</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div></div>
+      <div class="cat-row"><div class="name">سحب الدم وفصل العينات</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="pct">100%</div></div>
+      <div class="cat-row"><div class="name">عيادة طبيب الأسرة (TBC)</div><div class="track"><div class="fill" style="width:96.88%"></div></div><div class="pct">96.9%</div></div>
+      <div class="cat-row"><div class="name">التحصينات والطفل السليم</div><div class="track"><div class="fill" style="width:95.83%"></div></div><div class="pct">95.8%</div></div>
+      <div class="cat-row low"><div class="name">عيادة الفرز (Triage)</div><div class="track"><div class="fill" style="width:92.36%"></div></div><div class="pct">92.4%</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CENTER RANKING ================= -->
+<section style="background:var(--card); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">ترتيب المراكز</div>
+      <h2>نسبة الإنجاز الإجمالية لكل مركز صحي</h2>
+      <p>ترتيب المراكز الثمانية من الأعلى إلى الأقل بحسب النسبة الإجمالية المحققة عبر جميع المعايير.</p>
+    </div>
+    <table class="rank-table">
+      <thead>
+        <tr>
+          <th style="width:50px;">#</th>
+          <th>المركز الصحي</th>
+          <th style="width:300px;">نسبة الإنجاز</th>
+          <th style="width:120px;">التقييم</th>
+          <th style="width:140px;">تاريخ الزيارة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rank-badge top">1</span></td>
+          <td class="center-name">مركز صحي المنار</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:99.14%"></div></div><div class="bar-pct">99.14%</div></div></td>
+          <td><span class="pill excellent">ممتاز</span></td>
+          <td>16 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge top">1</span></td>
+          <td class="center-name">مركز صحي النسيم الشرقي</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:99.14%"></div></div><div class="bar-pct">99.14%</div></div></td>
+          <td><span class="pill excellent">ممتاز</span></td>
+          <td>3 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge top">1</span></td>
+          <td class="center-name">مركز صحي السلام</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:99.14%"></div></div><div class="bar-pct">99.14%</div></div></td>
+          <td><span class="pill excellent">ممتاز</span></td>
+          <td>28 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge top">1</span></td>
+          <td class="center-name">مركز صحي النسيم الغربي</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:99.14%"></div></div><div class="bar-pct">99.14%</div></div></td>
+          <td><span class="pill excellent">ممتاز</span></td>
+          <td>7 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge">5</span></td>
+          <td class="center-name">مركز صحي السعادة</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:98.28%"></div></div><div class="bar-pct">98.28%</div></div></td>
+          <td><span class="pill excellent">ممتاز</span></td>
+          <td>22 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge">6</span></td>
+          <td class="center-name">مركز صحي النسيم الجنوبي</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:97.41%"></div></div><div class="bar-pct">97.41%</div></div></td>
+          <td><span class="pill good">جيد جدًا</span></td>
+          <td>14 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge">7</span></td>
+          <td class="center-name">مركز صحي الجزيرة</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill watch" style="width:94.83%"></div></div><div class="bar-pct">94.83%</div></div></td>
+          <td><span class="pill watch">بحاجة متابعة</span></td>
+          <td>8 يونيو 2026</td>
+        </tr>
+        <tr>
+          <td><span class="rank-badge">7</span></td>
+          <td class="center-name">مركز صحي النسيم الأوسط</td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill watch" style="width:94.83%"></div></div><div class="bar-pct">94.83%</div></div></td>
+          <td><span class="pill watch">بحاجة متابعة</span></td>
+          <td>17 يونيو 2026</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= HEATMAP ================= -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">المصفوفة التفصيلية</div>
+      <h2>نسبة الإنجاز حسب المركز والمعيار</h2>
+      <p>عرض شامل لنسبة الإنجاز لكل معيار داخل كل مركز صحي، لتحديد التباين الدقيق بين المراكز.</p>
+    </div>
+    <div class="heatmap-wrap">
+      <table class="heatmap" id="heatmapTable">
+        <thead>
+          <tr>
+            <th class="rowlabel">المركز</th>
+            <th>الإدارة والقيادة</th>
+            <th>عيادة الفرز</th>
+            <th>الطوارئ والضماد</th>
+            <th>التحصينات والطفل</th>
+            <th>الملزمة الطبية</th>
+            <th>غرفة الأدوية</th>
+            <th>طبيب الأسرة TBC</th>
+            <th>سحب الدم</th>
+            <th>الإجمالي</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- rows injected by script for consistent color scale -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSIGHTS ================= -->
+<section style="background:var(--card); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">التحليل التنفيذي</div>
+      <h2>أبرز نقاط القوة والفجوات</h2>
+      <p>قراءة تحليلية لأنماط الأداء عبر النطاق، تجمع بين نتائج المراكز ونتائج المعايير لتحديد الاتجاه العام للجودة التمريضية.</p>
+    </div>
+    <div class="insight-grid">
+      <div class="insight-card pos">
+        <h3><span class="ic">✓</span> نقاط القوة</h3>
+        <ul>
+          <li><b>اتساق الأداء العام:</b> جميع المراكز الثمانية حققت نسبة إنجاز تتجاوز 94%، بفارق لا يتعدى 4.3 نقطة مئوية بين أعلى وأدنى مركز — مؤشر على تجانس مستوى الجودة داخل النطاق.</li>
+          <li><b>التزام إداري وتشغيلي كامل:</b> خمسة من أصل ثمانية معايير (الإدارة والقيادة، الطوارئ والضماد، الملزمة الطبية، غرفة الأدوية، وسحب الدم) حققت اكتمالًا تامًا 100% في جميع المراكز دون استثناء.</li>
+          <li><b>تعادل في الصدارة:</b> أربعة مراكز (المنار، النسيم الشرقي، السلام، النسيم الغربي) تشترك في أعلى نسبة إنجاز مسجلة (99.14%)، مما يعكس نموذجًا تشغيليًا يمكن تعميمه على بقية المراكز.</li>
+        </ul>
+      </div>
+      <div class="insight-card neg">
+        <h3><span class="ic">!</span> الفجوات وأولويات التحسين</h3>
+        <ul>
+          <li><b>عيادة الفرز هي الحلقة الأضعف:</b> أقل المعايير تحقيقًا (92.4%) وأكثرها تكرارًا كنقطة تحسين عبر المراكز — مما يجعلها الرافعة الأكثر تأثيرًا لرفع النسبة الإجمالية للنطاق.</li>
+          <li><b>مركزان بحاجة لمتابعة مباشرة:</b> مركزا الجزيرة والنسيم الأوسط سجّلا أدنى نسبة إنجاز (94.83%) نتيجة فجوات متكررة في معياري "الفرز" و"التحصينات والطفل السليم".</li>
+          <li><b>عيادة طبيب الأسرة (TBC):</b> ثاني أقل المعايير (96.9%)، مع ملاحظة متكررة في نصف المراكز تقريبًا حول مطابقة عدد الفرق الطبية مع جدول العيادة.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRIORITY ACTIONS ================= -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">أولويات التحسين</div>
+      <h2>أكثر جوانب التحسين تأثيرًا على رفع نسبة الإنجاز</h2>
+      <p>البنود التالية هي الأكثر تكرارًا كنقاط تحسين عبر المراكز، ومعالجتها تمثل أكبر أثر ممكن على رفع النسبة الإجمالية للنطاق.</p>
+    </div>
+    <div class="action-list">
+      <div class="action">
+        <div class="rank">1</div>
+        <div>
+          <div class="title">تعقيم طاولة الفرز والأجهزة الطبية بعد كل مريض</div>
+          <div class="desc">تكرر كنقطة تحسين في 5 من أصل 8 مراكز — أعلى معدل تكرار في كامل التقييم، ويقع ضمن أضعف المعايير (عيادة الفرز).</div>
+        </div>
+        <div class="impact">تأثير مرتفع جدًا</div>
+      </div>
+      <div class="action">
+        <div class="rank">2</div>
+        <div>
+          <div class="title">مطابقة عدد الفرق الطبية مع عدد التمريض في جدول TBC</div>
+          <div class="desc">تكرر في 4 من أصل 8 مراكز، ويرتبط بجاهزية الجدولة والتخطيط للقوى العاملة التمريضية.</div>
+        </div>
+        <div class="impact">تأثير مرتفع</div>
+      </div>
+      <div class="action">
+        <div class="rank">3</div>
+        <div>
+          <div class="title">توثيق طلب اللقاح إلكترونيًا عبر النظام</div>
+          <div class="desc">البند الوحيد الذي سُجّل بحالة عدم اكتمال تام (وليس جزئيًا) في مركزين، مما يستدعي تدخلًا تصحيحيًا مباشرًا رغم قلة تكراره.</div>
+        </div>
+        <div class="impact">أولوية عاجلة</div>
+      </div>
+      <div class="action">
+        <div class="rank">4</div>
+        <div>
+          <div class="title">تقديم الخدمة التمريضية لكل مريض على حدة لضمان الخصوصية</div>
+          <div class="desc">تكرر في 3 من أصل 8 مراكز، ضمن معيار عيادة الفرز.</div>
+        </div>
+        <div class="impact">تأثير متوسط</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DATA QUALITY ================= -->
+<section style="background:var(--card); border-top:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">ملاحظات جودة البيانات</div>
+      <h2>بيانات تستحق المراجعة</h2>
+      <p>تم رصد الملاحظات التالية أثناء التحليل، وهي لا تؤثر على دقة النسب المعروضة في هذا التقرير بعد التحقق منها، لكنها تستحق التصحيح في الملفات المصدر.</p>
+    </div>
+    <div class="note-list">
+      <div class="note">
+        <div class="mark">1</div>
+        <p><b>خطأ في عنوان ورقة الملخص لملف مركز الجزيرة:</b> يحمل عنوان ورقة "ملخص الفئات" اسم "مركز صحي المنار" خطأً، بينما جميع البيانات التفصيلية والنتائج داخل الملف تعود فعليًا لمركز الجزيرة (تم التحقق من التطابق الكامل بين ورقة التفاصيل وورقة الملخص). يُنصح بتصحيح العنوان في الملف المصدر لتفادي الالتباس مستقبلًا.</p>
+      </div>
+      <div class="note">
+        <div class="mark">2</div>
+        <p><b>عنوان ناقص في ملف مركز النسيم الأوسط:</b> عنوان ورقة "ملخص الفئات" لا يتضمن اسم المركز، على عكس بقية الملفات. لا يؤثر على صحة الأرقام، لكن يُنصح بإضافته لضمان تجانس التوثيق بين الملفات.</p>
+      </div>
+      <div class="note">
+        <div class="mark">3</div>
+        <p><b>تفاوت في نسب حضور فريق التمريض وقت الزيارة:</b> تراوحت بين 61% (النسيم الشرقي) و94% (النسيم الغربي والنسيم الأوسط). هذه النسبة لا تدخل في احتساب نسبة الإنجاز، لكنها بيانات إحصائية مرفقة في الملفات قد تستحق متابعة إدارية منفصلة حول جدولة القوى العاملة وقت الزيارات الإشرافية.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    تقرير تحليلي أُعد لأغراض العرض التنفيذي الداخلي — <b>إدارة التمريض، النطاق الخامس، تجمع الرياض الصحي الثاني</b><br>
+    مبني على نتائج الزيارات الإشرافية للمراكز الصحية الثمانية خلال يونيو 2026<br>
+    إعداد: <b>رئيسة التمريض للنطاق الخامس — عبير عبدالله عسيري</b>
+  </div>
+</footer>
+
+<script>
+const rows = [
+  {name:"مركز صحي المنار", vals:[100,100,100,100,100,100,93.75,100], total:99.14},
+  {name:"مركز صحي النسيم الشرقي", vals:[100,94.44,100,100,100,100,100,100], total:99.14},
+  {name:"مركز صحي السلام", vals:[100,94.44,100,100,100,100,100,100], total:99.14},
+  {name:"مركز صحي النسيم الغربي", vals:[100,94.44,100,100,100,100,100,100], total:99.14},
+  {name:"مركز صحي السعادة", vals:[100,94.44,100,100,100,100,93.75,100], total:98.28},
+  {name:"مركز صحي النسيم الجنوبي", vals:[100,83.33,100,100,100,100,100,100], total:97.41},
+  {name:"مركز صحي الجزيرة", vals:[100,83.33,100,88.89,100,100,93.75,100], total:94.83},
+  {name:"مركز صحي النسيم الأوسط", vals:[100,94.44,100,77.78,100,100,93.75,100], total:94.83},
+];
+
+function colorFor(v){
+  // scale from rose (low) to teal (high), floor around 75%
+  const t = Math.max(0, Math.min(1, (v-75)/25));
+  const r1=156,g1=59,b1=76;   // burgundy (low)
+  const r2=78,g2=49,b2=105;   // plum deep (high)
+  const r = Math.round(r1+(r2-r1)*t);
+  const g = Math.round(g1+(g2-g1)*t);
+  const b = Math.round(b1+(b2-b1)*t);
+  return `rgb(${r},${g},${b})`;
+}
+
+const tbody = document.querySelector('#heatmapTable tbody');
+rows.forEach(row=>{
+  const tr = document.createElement('tr');
+  let html = `<td class="rowlabel">${row.name}</td>`;
+  row.vals.forEach(v=>{
+    html += `<td class="cell" style="background:${colorFor(v)}">${v % 1 === 0 ? v : v.toFixed(1)}%</td>`;
+  });
+  html += `<td class="cell" style="background:${colorFor(row.total)}">${row.total.toFixed(2)}%</td>`;
+  tr.innerHTML = html;
+  tbody.appendChild(tr);
+});
+</script>
+
+</body>
+</html>
